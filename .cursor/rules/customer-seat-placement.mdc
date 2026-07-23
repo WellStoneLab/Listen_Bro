@@ -1,0 +1,36 @@
+---
+description: お客様3席の配置・サイズ（Fix済み）
+globs: assets/images/**/*,lib/**/*.dart
+alwaysApply: false
+---
+
+# お客様キャラ — 3席レイアウト（Fix）
+
+`assets/images/bar_bg_main.png`（基準 1152×1024）上のお客様着席位置は **左 / 中央 / 右の3箇所で確定**。変更しない。
+
+参照プレビュー: `assets/images/customers/john_order_preview_all_seats.png`
+
+## 固定アンカー（スプライト中心の水平位置）
+
+| 席 | 水平（幅比） | 垂直（上端の高さ比） | スプライト高さ比 |
+|----|-------------|---------------------|------------------|
+| 左 | **0.18** | **0.3135** | **0.3594** |
+| 中央 | **0.50** | 同上 | 同上 |
+| 右 | **0.82** | 同上 | 同上 |
+
+- 間隔: 左–中央 = 中央–右 = **0.32**（等間隔）
+- 座標系: 背景左上原点、スプライトは左上で配置
+- `px = bgWidth * anchorX - spriteWidth / 2`
+- `py = bgHeight * 0.3135`
+
+## スプライト仕様
+
+- 着席・両手をカウンター上で組む等
+- **組んだ手の下端より下は透過**
+- 胸〜手までは一体
+- `assets/images/customers/<id>_<pose>.png`
+
+## コード
+
+定数の唯一のソース: [`lib/config/customer_seat_layout.dart`](lib/config/customer_seat_layout.dart)  
+席位置のハードコード禁止。背景の椅子もこれらアンカーに背もたれ中心が来る前提。

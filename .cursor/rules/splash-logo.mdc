@@ -1,0 +1,13 @@
+---
+description: スプラッシュは WellStoneLab_logo.png を使う
+globs: lib/screens/splash*.dart,assets/images/**
+alwaysApply: false
+---
+
+# スプラッシュ画像
+
+このアプリのスプラッシュは `assets/images/WellStoneLab_logo.png` を使う。
+
+正本: `../dungeon_miner/assets/images/WellStoneLab_logo.png`（またはワークスペースルール参照）
+
+差し替え・独自スプラッシュへの変更はしない。

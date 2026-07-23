@@ -1,0 +1,31 @@
+Listen_Bro（聞いてよ！マスター）— 起動・APK配布手順
+
+## 起動
+cd ~/Documents/Listen_Bro
+flutter pub get
+flutter run
+
+## マスターデータ同期
+Notion相当の JSON を data/master/ に置き:
+dart run tools/export_notion_data.dart
+# → assets/data/ へコピー
+
+## 音声
+ゲーム開始 BGM: assets/audio/MusMus-BGM-059.mp3
+来店 SE: assets/audio/door_ring.mp3
+
+## APKビルド
+バージョン管理: pubspec.yaml（version: 0.1.0+N 形式）
+
+cd ~/Documents/Listen_Bro
+./tools/build_release_apk.sh
+# 出力: build/app/outputs/flutter-apk/Listen_Bro_<version>.apk
+# pubspec.yaml の +N はビルド毎に自動インクリメント
+
+GitHub Releases に公開:
+./tools/build_release_apk.sh --release
+# リポジトリ想定: WellStoneLab/Listen_Bro（GH_REPO で上書き可）
+# リモート作成・初回 push は別途依頼時に実施
+
+## ブランチ
+作業ブランチ: Listen_Bro

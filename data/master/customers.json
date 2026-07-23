@@ -1,0 +1,35 @@
+[
+  {
+    "id": "john",
+    "customerName": "John",
+    "prefAlcohol": 5,
+    "prefSweet": 1,
+    "prefFresh": 2,
+    "prefVisual": 3,
+    "avgStayHours": 2.5,
+    "preferredCocktailIds": ["bourbon"],
+    "spriteOrder": "assets/images/customers/john_order.png"
+  },
+  {
+    "id": "maria",
+    "customerName": "Maria",
+    "prefAlcohol": 2,
+    "prefSweet": 4,
+    "prefFresh": 3,
+    "prefVisual": 5,
+    "avgStayHours": 3.0,
+    "preferredCocktailIds": ["mai_tai"],
+    "spriteOrder": "assets/images/customers/maria_order.png"
+  },
+  {
+    "id": "ryo",
+    "customerName": "Ryo",
+    "prefAlcohol": 3,
+    "prefSweet": 3,
+    "prefFresh": 3,
+    "prefVisual": 3,
+    "avgStayHours": 3.0,
+    "preferredCocktailIds": ["xyz"],
+    "spriteOrder": "assets/images/customers/ryo_order.png"
+  }
+]

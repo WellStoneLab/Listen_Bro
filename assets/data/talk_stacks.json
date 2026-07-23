@@ -1,0 +1,73 @@
+[
+  {
+    "id": "john_lv0_s1",
+    "customerId": "john",
+    "level": 0,
+    "step": 1,
+    "endOfStack": false,
+    "talkType": "chat",
+    "text": "ちょっと、今夜は強い酒を飲みたいんだ。",
+    "questionAnswers": [],
+    "expectation": null
+  },
+  {
+    "id": "john_lv0_s2",
+    "customerId": "john",
+    "level": 0,
+    "step": 2,
+    "endOfStack": false,
+    "talkType": "suffer",
+    "text": "多くのものを失ったんだが、これ以上まだ俺から奪おうって言うのか。。。",
+    "questionAnswers": [],
+    "expectation": null
+  },
+  {
+    "id": "john_lv0_s3",
+    "customerId": "john",
+    "level": 0,
+    "step": 3,
+    "endOfStack": true,
+    "talkType": "chat",
+    "text": "もう俺は引退した身なんだ・・・仕事をするつもりはなかったんだが、そうもいかないようだ。",
+    "questionAnswers": [],
+    "expectation": null
+  },
+  {
+    "id": "john_lv1_s1",
+    "customerId": "john",
+    "level": 1,
+    "step": 1,
+    "endOfStack": false,
+    "talkType": "question",
+    "text": "何か今夜の最後を飾るのにちょうどいいものはないか？",
+    "questionAnswers": [
+      "ホットミルクなんて・・・どうですか？",
+      "ベネリM4はいかがでしょう？",
+      "いつものをもう一杯、でしょうか。",
+      "すみません。。。よくわかりませんでした。"
+    ],
+    "expectation": "ベネリM4はいかがでしょう？"
+  },
+  {
+    "id": "maria_lv0_s1",
+    "customerId": "maria",
+    "level": 0,
+    "step": 1,
+    "endOfStack": true,
+    "talkType": "chat",
+    "text": "今日は少しつかれたわ。",
+    "questionAnswers": [],
+    "expectation": null
+  },
+  {
+    "id": "maria_lv1_s1",
+    "customerId": "maria",
+    "level": 1,
+    "step": 1,
+    "endOfStack": false,
+    "talkType": "chat",
+    "text": "マスター。ここは素敵なお店ね。。。気に入っちゃった。",
+    "questionAnswers": [],
+    "expectation": null
+  }
+]

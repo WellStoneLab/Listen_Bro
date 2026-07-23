@@ -1,0 +1,74 @@
+[
+  {
+    "id": "margarita",
+    "cocktailName": "マルガリータ",
+    "base": "Tequila",
+    "mixLiquor": ["Citras Liqour"],
+    "shake": true,
+    "afterShake": ["Salt", "Lime"],
+    "prefAlcohol": 4,
+    "prefSweet": 2,
+    "prefFresh": 4,
+    "prefVisual": 4
+  },
+  {
+    "id": "mai_tai",
+    "cocktailName": "マイタイ",
+    "base": "Rum",
+    "mixLiquor": ["Citras Liqour", "Fresh Juice"],
+    "shake": true,
+    "afterShake": ["Lemon", "Orange", "Pineapple"],
+    "prefAlcohol": 2,
+    "prefSweet": 4,
+    "prefFresh": 4,
+    "prefVisual": 5
+  },
+  {
+    "id": "xyz",
+    "cocktailName": "XYZ",
+    "base": "Rum",
+    "mixLiquor": ["Citras Liqour"],
+    "shake": true,
+    "afterShake": ["Lemon"],
+    "prefAlcohol": 3,
+    "prefSweet": 3,
+    "prefFresh": 3,
+    "prefVisual": 4
+  },
+  {
+    "id": "moscow_mule",
+    "cocktailName": "モスコミュール",
+    "base": "Vodka",
+    "mixLiquor": ["Ginger Ale"],
+    "shake": false,
+    "afterShake": ["Lime", "ice"],
+    "prefAlcohol": 3,
+    "prefSweet": 2,
+    "prefFresh": 4,
+    "prefVisual": 3
+  },
+  {
+    "id": "bourbon",
+    "cocktailName": "バーボン",
+    "base": "Whisky",
+    "mixLiquor": [],
+    "shake": false,
+    "afterShake": ["ice"],
+    "prefAlcohol": 4,
+    "prefSweet": 1,
+    "prefFresh": 2,
+    "prefVisual": 3
+  },
+  {
+    "id": "gin_tonic",
+    "cocktailName": "ジントニック",
+    "base": "Gin",
+    "mixLiquor": ["Soda"],
+    "shake": false,
+    "afterShake": ["ice", "Lemon"],
+    "prefAlcohol": 3,
+    "prefSweet": 2,
+    "prefFresh": 3,
+    "prefVisual": 2
+  }
+]
