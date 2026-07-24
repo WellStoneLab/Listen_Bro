@@ -44,24 +44,31 @@ class DebugOverrides {
   const DebugOverrides({
     this.tickMinutes = 30,
     this.intimacyLevels = const {},
+    this.showIntimacyHud = false,
   });
 
   final int tickMinutes;
   final Map<String, int> intimacyLevels;
 
+  /// キャラクター画像上に親密度レベル／ゲージを表示
+  final bool showIntimacyHud;
+
   DebugOverrides copyWith({
     int? tickMinutes,
     Map<String, int>? intimacyLevels,
+    bool? showIntimacyHud,
   }) {
     return DebugOverrides(
       tickMinutes: tickMinutes ?? this.tickMinutes,
       intimacyLevels: intimacyLevels ?? this.intimacyLevels,
+      showIntimacyHud: showIntimacyHud ?? this.showIntimacyHud,
     );
   }
 
   Map<String, dynamic> toJson() => {
         'tickMinutes': tickMinutes,
         'intimacyLevels': intimacyLevels,
+        'showIntimacyHud': showIntimacyHud,
       };
 
   factory DebugOverrides.fromJson(Map<String, dynamic> json) {
@@ -69,6 +76,7 @@ class DebugOverrides {
     return DebugOverrides(
       tickMinutes: (json['tickMinutes'] as num?)?.toInt() ?? 30,
       intimacyLevels: raw.map((k, v) => MapEntry(k, (v as num).toInt())),
+      showIntimacyHud: json['showIntimacyHud'] as bool? ?? false,
     );
   }
 }

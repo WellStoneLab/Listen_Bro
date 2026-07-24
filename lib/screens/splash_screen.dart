@@ -18,8 +18,6 @@ class SplashScreen extends StatelessWidget {
               width: 240,
               fit: BoxFit.contain,
             ),
-            const SizedBox(height: 32),
-            const CircularProgressIndicator(),
             const SizedBox(height: 16),
             Text(
               '聞いてよ！マスター',

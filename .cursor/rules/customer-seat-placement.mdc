@@ -8,7 +8,8 @@ alwaysApply: false
 
 `assets/images/bar_bg_main.png`（基準 1152×1024）上のお客様着席位置は **左 / 中央 / 右の3箇所で確定**。変更しない。
 
-参照プレビュー: `assets/images/customers/john_order_preview_all_seats.png`
+参照プレビュー: `assets/images/customers/preview/john_order_preview_all_seats.png`
+（プレビュー画像はすべて `assets/images/customers/preview/` に置く）
 
 ## 固定アンカー（スプライト中心の水平位置）
 
@@ -28,7 +29,7 @@ alwaysApply: false
 - 着席・両手をカウンター上で組む等
 - **組んだ手の下端より下は透過**
 - 胸〜手までは一体
-- `assets/images/customers/<id>_<pose>.png`
+- `assets/images/customers/<id>_<pose>.png`（`order` / `drink` など）
 
 ## コード
 

@@ -1,4 +1,4 @@
-enum TalkType { chat, suffer, question }
+enum TalkType { chat, suffer, question, order }
 
 TalkType talkTypeFromString(String raw) {
   switch (raw) {
@@ -6,6 +6,9 @@ TalkType talkTypeFromString(String raw) {
       return TalkType.suffer;
     case 'question':
       return TalkType.question;
+    case 'Order':
+    case 'order':
+      return TalkType.order;
     case 'chat':
     default:
       return TalkType.chat;
@@ -23,6 +26,7 @@ class CustomerDef {
     required this.avgStayHours,
     required this.preferredCocktailIds,
     this.spriteOrder,
+    this.spriteDrink,
   });
 
   final String id;
@@ -34,6 +38,8 @@ class CustomerDef {
   final double avgStayHours;
   final List<String> preferredCocktailIds;
   final String? spriteOrder;
+  /// Optional drinking pose (e.g. holding glass). Falls back to [spriteOrder].
+  final String? spriteDrink;
 
   factory CustomerDef.fromJson(Map<String, dynamic> json) {
     return CustomerDef(
@@ -48,6 +54,7 @@ class CustomerDef {
           .map((e) => e as String)
           .toList(),
       spriteOrder: json['spriteOrder'] as String?,
+      spriteDrink: json['spriteDrink'] as String?,
     );
   }
 }
@@ -64,6 +71,7 @@ class CocktailDef {
     required this.prefSweet,
     required this.prefFresh,
     required this.prefVisual,
+    this.glassType,
   });
 
   final String id;
@@ -76,6 +84,7 @@ class CocktailDef {
   final int prefSweet;
   final int prefFresh;
   final int prefVisual;
+  final String? glassType;
 
   factory CocktailDef.fromJson(Map<String, dynamic> json) {
     final mix = (json['mixLiquor'] as List<dynamic>? ?? [])
@@ -95,6 +104,7 @@ class CocktailDef {
       prefSweet: (json['prefSweet'] as num).toInt(),
       prefFresh: (json['prefFresh'] as num).toInt(),
       prefVisual: (json['prefVisual'] as num).toInt(),
+      glassType: json['glassType'] as String?,
     );
   }
 }

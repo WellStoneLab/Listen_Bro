@@ -49,6 +49,7 @@ class GameConstants {
     'Soda',
     'Ginger Ale',
     'Fresh Juice',
+    'Vermouth',
   ];
 
   static const List<String> afterShakes = [

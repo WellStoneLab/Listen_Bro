@@ -17,11 +17,13 @@ class _DebugScreenState extends State<DebugScreen> {
   GameController get c => widget.controller;
   late int _tick;
   late Map<String, int> _levels;
+  late bool _showIntimacyHud;
 
   @override
   void initState() {
     super.initState();
     _tick = c.debug.tickMinutes;
+    _showIntimacyHud = c.debug.showIntimacyHud;
     _levels = {
       for (final cust in c.repository.customers)
         cust.id: c.debug.intimacyLevels[cust.id] ??
@@ -52,6 +54,14 @@ class _DebugScreenState extends State<DebugScreen> {
             },
           ),
           const SizedBox(height: 16),
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: const Text('親密度HUDをキャラ上に表示'),
+            subtitle: const Text('レベルとゲージをスプライト上部に表示'),
+            value: _showIntimacyHud,
+            onChanged: (v) => setState(() => _showIntimacyHud = v),
+          ),
+          const SizedBox(height: 16),
           const Text('親密度レベル'),
           for (final cust in c.repository.customers)
             Row(
@@ -76,6 +86,7 @@ class _DebugScreenState extends State<DebugScreen> {
               await c.updateDebug(DebugOverrides(
                 tickMinutes: _tick,
                 intimacyLevels: Map<String, int>.from(_levels),
+                showIntimacyHud: _showIntimacyHud,
               ));
               if (context.mounted) Navigator.pop(context);
             },

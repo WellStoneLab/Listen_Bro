@@ -8,7 +8,8 @@
     "prefVisual": 3,
     "avgStayHours": 2.5,
     "preferredCocktailIds": ["bourbon"],
-    "spriteOrder": "assets/images/customers/john_order.png"
+    "spriteOrder": "assets/images/customers/john_order.png",
+    "spriteDrink": "assets/images/customers/john_drink.png"
   },
   {
     "id": "maria",
@@ -31,5 +32,17 @@
     "avgStayHours": 3.0,
     "preferredCocktailIds": ["xyz"],
     "spriteOrder": "assets/images/customers/ryo_order.png"
+  },
+  {
+    "id": "myakumyaku",
+    "customerName": "ミャクミャク様",
+    "prefAlcohol": 2,
+    "prefSweet": 4,
+    "prefFresh": 3,
+    "prefVisual": 5,
+    "avgStayHours": 2.5,
+    "preferredCocktailIds": [],
+    "spriteOrder": "assets/images/customers/myakumyaku_order.png",
+    "spriteDrink": "assets/images/customers/myakumyaku_drink.png"
   }
 ]

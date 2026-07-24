@@ -34,7 +34,12 @@ class MasterDataRepository {
 
   List<TalkStackDef> stacksFor(String customerId, int level) {
     final list = talkStacks
-        .where((t) => t.customerId == customerId && t.level == level)
+        .where(
+          (t) =>
+              t.customerId == customerId &&
+              t.level == level &&
+              t.talkType != TalkType.order,
+        )
         .toList()
       ..sort((a, b) => a.step.compareTo(b.step));
     return list;
@@ -46,5 +51,22 @@ class MasterDataRepository {
       if (s.step == step) return s;
     }
     return stacks.isEmpty ? null : stacks.first;
+  }
+
+  /// Order dialogue (speech bubble). Prefer current intimacy level, else any.
+  TalkStackDef? orderFor(String customerId, int level) {
+    final forLevel = talkStacks
+        .where(
+          (t) =>
+              t.customerId == customerId &&
+              t.talkType == TalkType.order &&
+              t.level == level,
+        )
+        .toList();
+    if (forLevel.isNotEmpty) return forLevel.first;
+    final any = talkStacks
+        .where((t) => t.customerId == customerId && t.talkType == TalkType.order)
+        .toList();
+    return any.isEmpty ? null : any.first;
   }
 }

@@ -19,6 +19,7 @@ enum GamePhase {
   mixing,
   awaitingCommand,
   awaitingQuestionAnswer,
+  closing,
 }
 
 class GameController extends ChangeNotifier {
@@ -44,6 +45,15 @@ class GameController extends ChangeNotifier {
   GamePhase phase = GamePhase.idle;
   String? selectedGuestId;
   TalkStackDef? pendingTalkStep;
+
+  /// Order line shown as a speech bubble on the main stage (not in the log).
+  String? orderBubbleText;
+
+  /// 閉店演出用メッセージ（メインエリア中央）
+  String? closingMessage;
+
+  /// 暗転オーバーレイ（0=なし, 1=完全暗転）
+  double blackoutOpacity = 0;
 
   Future<void> initialize() async {
     await repository.load();
@@ -81,6 +91,7 @@ class GameController extends ChangeNotifier {
     phase = GamePhase.idle;
     selectedGuestId = null;
     pendingTalkStep = null;
+    orderBubbleText = null;
     _appendLog('DAY ${save.day} — バーが開店した。');
     await saveStore.save(save);
     hasSave = true;
@@ -102,6 +113,9 @@ class GameController extends ChangeNotifier {
     selectedGuestId = save.guests.isEmpty ? null : save.guests.first.customerId;
     if (selectedGuestId != null) {
       _preloadTalk(selectedGuestId!);
+      _refreshOrderBubble();
+    } else {
+      orderBubbleText = null;
     }
     await audio.playBgm(AudioPaths.bgmMain);
     notifyListeners();
@@ -141,6 +155,7 @@ class GameController extends ChangeNotifier {
     if (selectedGuestId == customerId) return;
     selectedGuestId = customerId;
     _preloadTalk(customerId);
+    _refreshOrderBubble();
     if (save.guests.length > 1) {
       final name = customerOf(customerId)?.customerName ?? customerId;
       _appendLog('→ $name を選んだ。');
@@ -205,6 +220,7 @@ class GameController extends ChangeNotifier {
 
     g.awaitingOrder = false;
     g.justServed = true;
+    orderBubbleText = null;
     phase = GamePhase.awaitingCommand;
     _preloadTalk(g.customerId);
     await _autosave();
@@ -258,6 +274,12 @@ class GameController extends ChangeNotifier {
     if (step != null && step.talkType == TalkType.suffer) {
       final customer = repository.customersById[g.customerId]!;
       _appendLog('${customer.customerName}「${step.text}」');
+      if (step.questionAnswers.isNotEmpty) {
+        phase = GamePhase.awaitingQuestionAnswer;
+        await _autosave();
+        notifyListeners();
+        return;
+      }
       await _completeTalkStep(g, step);
       return;
     }
@@ -282,6 +304,12 @@ class GameController extends ChangeNotifier {
       if (roll < 0.5) {
         final customer = repository.customersById[g.customerId]!;
         _appendLog('${customer.customerName}「${step!.text}」');
+        if (step.questionAnswers.isNotEmpty) {
+          phase = GamePhase.awaitingQuestionAnswer;
+          await _autosave();
+          notifyListeners();
+          return;
+        }
         await _completeTalkStep(g, step);
         return;
       }
@@ -313,9 +341,12 @@ class GameController extends ChangeNotifier {
   Future<void> answerQuestion(String answer) async {
     final g = _selectedGuest();
     final step = pendingTalkStep;
+    final canAnswer = step != null &&
+        (step.talkType == TalkType.question ||
+            (step.talkType == TalkType.suffer &&
+                step.questionAnswers.isNotEmpty));
     if (g == null ||
-        step == null ||
-        step.talkType != TalkType.question ||
+        !canAnswer ||
         phase != GamePhase.awaitingQuestionAnswer) {
       return;
     }
@@ -349,6 +380,7 @@ class GameController extends ChangeNotifier {
       g.awaitingOrder = true;
       g.justServed = false;
       phase = GamePhase.idle;
+      _refreshOrderBubble();
       await _autosave();
       notifyListeners();
       return;
@@ -360,14 +392,25 @@ class GameController extends ChangeNotifier {
   Future<void> _completeTalkStep(GuestState g, TalkStackDef step) async {
     final prog = _progress(g.customerId);
     if (step.endOfStack) {
-      intimacy.applyGauge(prog, 1);
-      _appendLog('会話の区切りがついた。（親密度ゲージ+1）');
+      // Notion: EndOfStack 完了時は親密度レベル+1、親密度ゲージ=0
+      if (prog.intimacyLevel < GameConstants.maxIntimacyLevel) {
+        prog.intimacyLevel += 1;
+        prog.intimacyGauge = 0;
+        _appendLog(
+          '会話の区切りがついた。（親密度レベル+1 → Lv.${prog.intimacyLevel}）',
+        );
+      } else {
+        prog.intimacyGauge = 0;
+        _appendLog('会話の区切りがついた。');
+        _appendLog('親密度が最大値に達しました。マスターはもう心友です！');
+      }
       prog.stackStep = 1;
       prog.stackInterrupted = false;
     } else {
       prog.stackStep = step.step + 1;
       prog.stackInterrupted = false;
     }
+    _preloadTalk(g.customerId);
     await _finishCommandTurn(g);
   }
 
@@ -379,21 +422,34 @@ class GameController extends ChangeNotifier {
       save.blockNextArrival = false;
     }
     phase = g.awaitingOrder ? GamePhase.idle : GamePhase.awaitingCommand;
+    // コマンドイベントを完了させてから時間経過・退店へ
+    notifyListeners();
     await _advanceTime();
   }
 
+  static const _guestDissolve = Duration(milliseconds: 750);
+
   Future<void> _advanceTime() async {
+    if (phase == GamePhase.closing || blackoutOpacity > 0) return;
+
     final tick = debug.tickMinutes.clamp(30, 8 * 60);
     // snap to 30-min units
     final step = (tick ~/ 30).clamp(1, 16) * 30;
     save.minutesFromMidnight += step;
     _appendLog('（時間が$step分経過した → ${clockLabel()}）');
+    notifyListeners();
 
-    final departed = await _processDepartures();
     if (_isPastClose()) {
-      await _closeDay();
-    } else if (!departed) {
-      // 退店と同じタイミングでは来店しない（次の時間経過で来店判定）
+      await _runClosingSequence();
+      return;
+    }
+
+    // コマンド完了後に退店判定（同一tickの来店はしない）
+    final departed = await _processDepartures();
+    if (departed) {
+      notifyListeners();
+      await Future<void>.delayed(_guestDissolve);
+    } else {
       await _tryArriveGuest();
     }
     await _autosave();
@@ -407,20 +463,48 @@ class GameController extends ChangeNotifier {
     return save.minutesFromMidnight >= 24 * 60 + GameConstants.closeHour * 60;
   }
 
-  Future<void> _closeDay() async {
+  Future<void> _runClosingSequence() async {
+    phase = GamePhase.closing;
+    closingMessage = '閉店のお時間となりました・・・';
+    blackoutOpacity = 0;
+    notifyListeners();
+    await Future<void>.delayed(const Duration(milliseconds: 900));
+    await Future<void>.delayed(const Duration(milliseconds: 1600));
+
+    closingMessage = null;
+    notifyListeners();
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+
+    blackoutOpacity = 1;
+    notifyListeners();
+    await Future<void>.delayed(const Duration(milliseconds: 900));
+
+    await _resetToNextDay(silentLeave: true);
+
+    await Future<void>.delayed(const Duration(milliseconds: 350));
+    blackoutOpacity = 0;
+    phase = GamePhase.idle;
+    notifyListeners();
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+
+    _appendLog('DAY ${save.day} — バーが開店した。');
+    await _tryArriveGuest();
+    await _autosave();
+    notifyListeners();
+  }
+
+  Future<void> _resetToNextDay({required bool silentLeave}) async {
     for (final g in List<GuestState>.from(save.guests)) {
-      _onGuestLeave(g, closing: true);
+      _onGuestLeave(g, closing: true, logLeave: !silentLeave);
     }
     save.guests.clear();
     save.day += 1;
     save.minutesFromMidnight = GameConstants.openHour * 60;
     save.logs = [];
     save.blockNextArrival = false;
-    phase = GamePhase.idle;
     selectedGuestId = null;
     pendingTalkStep = null;
-    _appendLog('DAY ${save.day} — バーが開店した。');
-    await _tryArriveGuest();
+    closingMessage = null;
   }
 
   /// Returns true if at least one guest left this tick.
@@ -442,10 +526,16 @@ class GameController extends ChangeNotifier {
     return leaving.isNotEmpty;
   }
 
-  void _onGuestLeave(GuestState g, {required bool closing}) {
+  void _onGuestLeave(
+    GuestState g, {
+    required bool closing,
+    bool logLeave = true,
+  }) {
     final customer = repository.customersById[g.customerId];
     final name = customer?.customerName ?? g.customerId;
-    _appendLog(closing ? '$name が退店した。' : '$name が席を立った。');
+    if (logLeave) {
+      _appendLog(closing ? '$name が退店した。' : '$name が席を立った。');
+    }
     final prog = _progress(g.customerId);
     final canResume = prog.intimacyLevel >= GameConstants.stackResumeMinLevel &&
         _rng.nextDouble() < 0.5;
@@ -497,6 +587,7 @@ class GameController extends ChangeNotifier {
     }
     _appendLog('${customer.customerName} が来店した。');
     _preloadTalk(customer.id);
+    _refreshOrderBubble();
     unawaited(audio.playSe(AudioPaths.doorRing));
   }
 
@@ -504,6 +595,17 @@ class GameController extends ChangeNotifier {
     final prog = _progress(customerId);
     pendingTalkStep =
         repository.stepFor(customerId, prog.intimacyLevel, prog.stackStep);
+  }
+
+  void _refreshOrderBubble() {
+    final g = _selectedGuest();
+    if (g == null || !g.awaitingOrder) {
+      orderBubbleText = null;
+      return;
+    }
+    final prog = _progress(g.customerId);
+    final order = repository.orderFor(g.customerId, prog.intimacyLevel);
+    orderBubbleText = order?.text;
   }
 
   CustomerProgress _progress(String id) {

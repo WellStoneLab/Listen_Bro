@@ -1,12 +1,34 @@
 [
   {
+    "id": "john_lv0_order",
+    "customerId": "john",
+    "level": 0,
+    "step": 0,
+    "endOfStack": false,
+    "talkType": "Order",
+    "text": "強めのものを・・・頼む",
+    "questionAnswers": [],
+    "expectation": null
+  },
+  {
+    "id": "maria_lv0_order",
+    "customerId": "maria",
+    "level": 0,
+    "step": 0,
+    "endOfStack": false,
+    "talkType": "Order",
+    "text": "甘くてフルーツの楽しめるモノをお願い",
+    "questionAnswers": [],
+    "expectation": null
+  },
+  {
     "id": "john_lv0_s1",
     "customerId": "john",
     "level": 0,
     "step": 1,
     "endOfStack": false,
     "talkType": "chat",
-    "text": "ちょっと、今夜は強い酒を飲みたいんだ。",
+    "text": "ちょっと、今夜は飲みたいんだ。",
     "questionAnswers": [],
     "expectation": null
   },
@@ -18,8 +40,13 @@
     "endOfStack": false,
     "talkType": "suffer",
     "text": "多くのものを失ったんだが、これ以上まだ俺から奪おうって言うのか。。。",
-    "questionAnswers": [],
-    "expectation": null
+    "questionAnswers": [
+      "苦しい日というのは、いつかきっと終わると思いますよ。。",
+      "・・・少しお疲れの様ですね",
+      "仕事にもどられたんですか？",
+      "パーッとやっちゃってください。"
+    ],
+    "expectation": "仕事にもどられたんですか？"
   },
   {
     "id": "john_lv0_s3",
@@ -29,6 +56,17 @@
     "endOfStack": true,
     "talkType": "chat",
     "text": "もう俺は引退した身なんだ・・・仕事をするつもりはなかったんだが、そうもいかないようだ。",
+    "questionAnswers": [],
+    "expectation": null
+  },
+  {
+    "id": "maria_lv0_s1",
+    "customerId": "maria",
+    "level": 0,
+    "step": 1,
+    "endOfStack": true,
+    "talkType": "chat",
+    "text": "今日は少しつかれたわ。",
     "questionAnswers": [],
     "expectation": null
   },
@@ -47,17 +85,6 @@
       "すみません。。。よくわかりませんでした。"
     ],
     "expectation": "ベネリM4はいかがでしょう？"
-  },
-  {
-    "id": "maria_lv0_s1",
-    "customerId": "maria",
-    "level": 0,
-    "step": 1,
-    "endOfStack": true,
-    "talkType": "chat",
-    "text": "今日は少しつかれたわ。",
-    "questionAnswers": [],
-    "expectation": null
   },
   {
     "id": "maria_lv1_s1",
